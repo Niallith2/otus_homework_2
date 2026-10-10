@@ -1,39 +1,56 @@
 package ru.otus.config;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import ru.otus.listeners.HighlightListener;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 
 public class WebDriverConfig {
 
-    public WebDriver chromeDriver() {
-        WebDriverManager.chromedriver().setup();
+    private static final String MOON_URL = "http://192.168.1.12:4444/wd/hub";
 
+    public WebDriver chromeDriver() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized");
         options.addArguments("--disable-notifications");
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
 
-        WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
-        driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
-
-        HighlightListener highlightListener = new HighlightListener();
-        EventFiringDecorator<WebDriver> decorator = new EventFiringDecorator<>(highlightListener);
-        driver = decorator.decorate(driver);
-        return driver;
+        WebDriver driver = createRemoteDriver(options);
+        configureTimeouts(driver);
+        return decorateWithListener(driver);
     }
 
     public WebDriver firefoxDriver() {
-        WebDriverManager.firefoxdriver().setup();
-        return new FirefoxDriver();
+        FirefoxOptions options = new FirefoxOptions();
+        WebDriver driver = createRemoteDriver(options);
+        configureTimeouts(driver);
+        return decorateWithListener(driver);
+    }
+
+    private WebDriver createRemoteDriver(org.openqa.selenium.Capabilities options) {
+        try {
+            return new RemoteWebDriver(new URL(MOON_URL), options);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Некорректный URL Moon: " + MOON_URL, e);
+        }
+    }
+
+    private void configureTimeouts(WebDriver driver) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+        driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+    }
+
+    private WebDriver decorateWithListener(WebDriver driver) {
+        HighlightListener highlightListener = new HighlightListener();
+        EventFiringDecorator<WebDriver> decorator = new EventFiringDecorator<>(highlightListener);
+        return decorator.decorate(driver);
     }
 }
