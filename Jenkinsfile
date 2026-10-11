@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'BRANCH', defaultValue: 'master', description: 'Branch')
         string(name: 'MOON_IP', defaultValue: 'moon.aerokube.local', description: 'Moon url')
-        string(name: 'MOON_PORT', defaultValue: '4444', description: 'Moon port')
+        string(name: 'MOON_PORT', defaultValue: '80', description: 'Moon port')
         string(name: 'BROWSER', defaultValue: 'chrome', description: 'Remote browser')
         booleanParam(name: 'FORCE', defaultValue: false, description: 'Принудительно пересобрать образ')
     }
