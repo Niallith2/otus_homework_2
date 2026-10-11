@@ -14,9 +14,9 @@ public class UiSteps {
     @Autowired
     WebDriverManager manager;
 
-    @Когда("^откроем браузер (.*?)$")
-    public void openBrowser(String browserName) {
-        manager.start(browserName);
+    @Когда("^откроем браузер$")
+    public void openBrowser() {
+        manager.start();
     }
 
 

@@ -16,9 +16,9 @@ public class WebDriverManager {
         return webDriver.get();
     }
 
-    public WebDriver start(String browser) {
+    public WebDriver start() {
         if (webDriver.get() == null) {
-            webDriver.set(new WebDriverFactory().getDriver(browser));
+            webDriver.set(new WebDriverFactory().getDriver());
         }
         return webDriver.get();
     }

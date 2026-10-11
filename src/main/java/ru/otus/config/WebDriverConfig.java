@@ -14,7 +14,9 @@ import java.time.Duration;
 
 public class WebDriverConfig {
 
-    private static final String MOON_URL = "http://192.168.1.12:4444/wd/hub";
+    private static final String MOON_IP = System.getProperty("moon_ip");
+    private static final String MOON_PORT = System.getProperty("moon_port");
+    private static final String MOON_URL = String.format("http://%s:%s/wd/hub", MOON_IP, MOON_PORT);
 
     public WebDriver chromeDriver() {
         ChromeOptions options = new ChromeOptions();
